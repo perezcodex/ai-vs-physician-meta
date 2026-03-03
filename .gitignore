@@ -1,0 +1,24 @@
+# Data — large files, intermediate outputs, cached results
+data/raw/
+data/extracted/
+data/cache/
+
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
