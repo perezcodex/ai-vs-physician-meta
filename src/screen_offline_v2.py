@@ -18,6 +18,13 @@ import pandas as pd
 
 from config.queries_v2_offline import AI_TERMS, CLINICAL_TASK_TERMS, EXCLUSION_CRITERIA, PHYSICIAN_TERMS
 
+# Overall agree with the exclusions here and aligns with "what's next" suggestion from Ethan
+# The context is "real-world", this can include real-world data, real-world integrations,
+# doctors who have practiced in the real-world. Med students and board exams are out of scope.
+
+# One additional thought, some board/licensing exams are used to later evaluate residents
+# who are practicing in the real-world. Are those excluded under this context?
+
 EXCLUDE_PATTERNS = [
     "systematic review",
     "meta-analysis",
@@ -27,8 +34,8 @@ EXCLUDE_PATTERNS = [
     "letter to the editor",
     "protocol",
     "study protocol",
-    "medical student", # this would remove physician level depth from corpus
-    "usmle", # this would remove study design depth from corpus
+    "medical student",
+    "usmle",
     "board exam",
     "multiple-choice",
 ]
