@@ -27,8 +27,8 @@ EXCLUDE_PATTERNS = [
     "letter to the editor",
     "protocol",
     "study protocol",
-    "medical student",
-    "usmle",
+    "medical student", # this would remove physician level depth from corpus
+    "usmle", # this would remove study design depth from corpus
     "board exam",
     "multiple-choice",
 ]
