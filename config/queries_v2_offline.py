@@ -109,11 +109,6 @@ PATIENT_FACING_TERMS = [
     "follow-up recommendations",
 ]
 
-# So I actually ran a screening experiemnt on Pubmed only with two runs of (generic terms) vs. 
-# (generic terms + specialty ABMS (US/UK variants)) and additional 30% of corpus was captured.
-# Papers found were in radiology, orthopedic, opthamology, urology, pathology, etc..
-# Can share term list of useful
-
 PHYSICIAN_TERMS = [
     "physician",
     "clinician",
@@ -133,6 +128,67 @@ PHYSICIAN_TERMS = [
     "AI-assisted",
     "physician augment",
     "clinician augment",
+
+    # include residents?
+    "residents",
+
+    # Ran a screening experiment on PubMed only with two runs of (generic terms) vs.
+    # (generic terms + specialty ABMS (US/UK variants)) and additional 30% of corpus was captured.
+    # Papers found were in radiology, orthopedic, ophthalmology, urology, pathology, etc.
+    # Including the list here if useful
+
+    # Imaging / diagnostics
+    "radiographer",
+    "pathologist",
+    "ophthalmologist",
+    "dermatologist",
+    "endoscopist",
+
+    # Internal medicine / subspecialties
+    "oncologist",
+    "cardiologist",
+    "neurologist",
+    "gastroenterologist",
+    "rheumatologist",
+    "intensivist",
+    "hospitalist",
+    "internist",
+    "endocrinologist",
+    "hematologist",
+    "haematologist",
+    "nephrologist",
+    "pulmonologist",
+    "respirologist",
+    "allergist",
+    "immunologist",
+    "hepatologist",
+    "neonatologist",
+
+    # Surgery / procedural
+    "urologist",
+    "otolaryngologist",
+    "orthopedic",
+    "orthopaedic",
+    "neurosurgeon",
+    "obstetrician",
+    "gynecologist",
+    "gynaecologist",
+
+    # Primary care / anaesthesia
+    "general practitioner",
+    "anesthesiologist",
+    "anaesthesiologist",
+    "anaesthetist",
+
+    # Mental health / paediatrics / rehab / geriatrics
+    "psychiatrist",
+    "pediatrician",
+    "paediatrician",
+    "physiatrist",
+    "geriatrician",
+    "epileptologist",
+    "perinatologist",
+    "urogynecologist",
 ]
 
 COMPARISON_TERMS = [

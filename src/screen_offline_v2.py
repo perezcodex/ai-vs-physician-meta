@@ -63,9 +63,11 @@ GENERIC_AI_PATTERNS = [
     "digital signal processing",
 ]
 
-# Agree with overall accuracy patterns, include top-K studies? DDx study is Top-10
-# Also percentage (0-100) studies.
+# Agree with overall accuracy patterns, include top-K studies and percentage (0-100) studies.
 # Are accuracy patterns required? What would happen if didn't constrain pull by fields?
+
+# If we do any statistical calculations, which accuracy patterns to include may be
+# constratined by those requirements (ex: calculating effect size, weighting, heterogeniety)
 
 ACCURACY_PATTERNS = [
     r"\baccuracy\b",
