@@ -235,6 +235,13 @@ SUPPLEMENTAL_TERMS = [
     "complex care",
     "multireader",
     "human expertise",
+    # secondary RQ: physician+AI augmentation terms
+    "augmented",
+    "unaided",
+    "second reader",
+    "AI-augmented",
+    "with AI",
+    "without AI",
 ]
 
 SUPPLEMENTAL_COMPARATOR_QUERY = _or_join([
@@ -255,6 +262,14 @@ SUPPLEMENTAL_COMPARATOR_QUERY = _or_join([
     "collaborative workflow",
     "human-ai collaboration",
     "ai-assisted",
+    # secondary RQ: physician+AI augmentation comparators
+    "AI-augmented",
+    "augmented clinician",
+    "augmented physician",
+    "with AI assistance",
+    "without AI",
+    "unaided physician",
+    "unaided clinician",
     # 1.1: specialist terms in supplemental comparator
     "dermatologist",
     "pathologist",

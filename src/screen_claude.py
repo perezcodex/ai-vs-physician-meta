@@ -19,17 +19,24 @@ from anthropic.types.messages.batch_create_params import Request
 
 MODEL = "claude-sonnet-4-6"
 
-SYSTEM_PROMPT = """You are screening abstracts for a systematic review comparing AI performance to physician performance on clinical tasks.
+SYSTEM_PROMPT = """You are screening abstracts for a systematic review with two research questions:
+1. Does AI perform better than physicians on clinical tasks?
+2. When AI assists physicians, do physician+AI combinations outperform AI alone?
 
 Classify each paper as exactly one of:
-- include: Directly compares AI to physicians/clinicians on a clinical task with measurable outcomes
+- include: The study directly addresses either research question with measurable outcomes. This includes:
+  (a) AI vs physician/clinician head-to-head comparison
+  (b) Physician+AI vs AI alone comparison
+  (c) Three-arm studies with AI, physician, and physician+AI conditions
 - uncertain: Partial signals of AI-physician comparison, indirect comparison, or unclear study design
-- exclude: No AI-physician comparison, or matches an exclusion criterion
+- exclude: No AI-physician or AI-augmentation comparison, or matches an exclusion criterion
 
 Always exclude if any of the following apply:
 - Systematic review, meta-analysis, review article, editorial, commentary, letter to the editor
 - Study protocol or pre-registration
 - Compares AI only to medical students, board exams, or multiple-choice benchmarks with no physician arm
+
+For each paper also identify which study arms are present based on what the abstract describes.
 
 Respond with a JSON object only — no markdown, no explanation outside the JSON:
 {
@@ -38,6 +45,9 @@ Respond with a JSON object only — no markdown, no explanation outside the JSON
   "screen_has_physician_comparison": true | false,
   "screen_has_physician_condition": true | false,
   "screen_has_accuracy_metric": true | false,
+  "arm_ai_alone": true | false,
+  "arm_physician_alone": true | false,
+  "arm_physician_plus_ai": true | false,
   "screen_notes": "<any caveats, or empty string>"
 }"""
 
@@ -49,6 +59,9 @@ def _parse_result(result) -> dict:
         "screen_has_physician_comparison": False,
         "screen_has_physician_condition": False,
         "screen_has_accuracy_metric": False,
+        "arm_ai_alone": False,
+        "arm_physician_alone": False,
+        "arm_physician_plus_ai": False,
         "screen_notes": "parse_error",
     }
     if result is None or result.result.type != "succeeded":
@@ -62,6 +75,9 @@ def _parse_result(result) -> dict:
             "screen_has_physician_comparison": bool(parsed.get("screen_has_physician_comparison", False)),
             "screen_has_physician_condition": bool(parsed.get("screen_has_physician_condition", False)),
             "screen_has_accuracy_metric": bool(parsed.get("screen_has_accuracy_metric", False)),
+            "arm_ai_alone": bool(parsed.get("arm_ai_alone", False)),
+            "arm_physician_alone": bool(parsed.get("arm_physician_alone", False)),
+            "arm_physician_plus_ai": bool(parsed.get("arm_physician_plus_ai", False)),
             "screen_notes": parsed.get("screen_notes", ""),
         }
     except Exception as e:
@@ -91,7 +107,7 @@ def screen_offline_v2(
             custom_id=str(i),
             params=MessageCreateParamsNonStreaming(
                 model=MODEL,
-                max_tokens=512,
+                max_tokens=640,
                 system=SYSTEM_PROMPT,
                 messages=[{
                     "role": "user",
