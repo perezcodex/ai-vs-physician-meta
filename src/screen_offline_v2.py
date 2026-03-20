@@ -16,7 +16,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from config.queries_v2_offline import AI_TERMS, CLINICAL_TASK_TERMS, EXCLUSION_CRITERIA, PHYSICIAN_TERMS
+from config.queries_v2_offline import AI_TERMS, CLINICAL_TASK_TERMS, EXCLUSION_CRITERIA, PHYSICIAN_TERMS # Took a look at these files, comments will be in there
+
+# Overall agree with the exclusions here.
+# Some board/licensing exams are used to later evaluate residents. 
+# Are those excluded under this context?
 
 EXCLUDE_PATTERNS = [
     "systematic review",
@@ -47,6 +51,12 @@ GENERIC_AI_PATTERNS = [
     "generative ai",
 ]
 
+# Agree with overall accuracy patterns, include top-K studies and percentage (0-100) studies.
+# Are accuracy patterns required? What would happen if didn't constrain pull by fields?
+
+# If we do any statistical calculations, which accuracy patterns to include may be
+# constratined by those requirements (ex: calculating effect size, weighting, heterogeniety)
+
 ACCURACY_PATTERNS = [
     r"\baccuracy\b",
     r"\bauc\b",
@@ -57,6 +67,10 @@ ACCURACY_PATTERNS = [
     r"\bprecision\b",
     r"\brecall\b",
     r"\b\d{1,3}(?:\.\d+)?%\b",
+
+    # proposed scalable regex addition for Top-K studies
+    r"\btop[- ]?\d+(?:\s+accuracy)?\b",
+    r"\btop[- ]?k(?:\s+accuracy)?\b",
 ]
 
 STRONG_COMPARISON_PATTERNS = [
