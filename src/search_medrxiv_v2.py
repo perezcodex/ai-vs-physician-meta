@@ -10,7 +10,7 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-from config.queries_v2_offline import DATE_END, DATE_START, MEDRXIV_LANE_QUERIES, QUERY_VERSION
+from config.queries_v3 import DATE_END, DATE_START, MEDRXIV_LANE_QUERIES, QUERY_VERSION
 
 BASE_URL = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
 PAGE_SIZE = 200

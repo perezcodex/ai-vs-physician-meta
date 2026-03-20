@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-from config.queries_v2_offline import DATE_END, DATE_START, PUBMED_LANE_QUERIES, QUERY_VERSION, pubmed_query
+from config.queries_v3 import DATE_END, DATE_START, PUBMED_LANE_QUERIES, QUERY_VERSION, pubmed_query
 
 BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 RETMAX = 500

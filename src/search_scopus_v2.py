@@ -19,7 +19,7 @@ import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 
-from config.queries_v2_offline import QUERY_VERSION, SCOPUS_LANE_QUERIES
+from config.queries_v3 import QUERY_VERSION, SCOPUS_LANE_QUERIES
 
 load_dotenv()
 
