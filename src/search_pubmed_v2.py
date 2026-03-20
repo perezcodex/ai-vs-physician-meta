@@ -31,7 +31,7 @@ def _esearch(query: str, retstart: int = 0) -> tuple[list[str], int]:
         "datetype": "pdat",
     }
     for attempt in range(5):
-        r = requests.get(f"{BASE_URL}/esearch.fcgi", params=params, timeout=30)
+        r = requests.post(f"{BASE_URL}/esearch.fcgi", data=params, timeout=30)
         r.raise_for_status()
         try:
             data = r.json()["esearchresult"]
