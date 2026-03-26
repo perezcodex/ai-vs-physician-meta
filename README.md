@@ -8,7 +8,7 @@ A systematic review pipeline for identifying and extracting AI-vs-human performa
 
 This repo contains the search, screening, and extraction pipeline for a meta-analysis comparing AI system performance to physician and clinician performance across clinical and administrative healthcare tasks.
 
-The current version (v2) is an expanded offline workflow that does not depend on a model API. A model-based re-screening pass is planned (see [Known Limitations](#known-limitations)).
+The current version (v3) uses Claude Sonnet 4.6 via the Anthropic Batches API for screening. The v2 rule-based screener is preserved for reference.
 
 ---
 
@@ -49,51 +49,57 @@ The v2 search is broader than the original pipeline. It includes:
 
 ### Inclusion criteria
 
-1. Primary research study (not a review, editorial, comment, or protocol-only paper)
-2. Uses an AI system for a healthcare task, including clinical decision-making and administrative workflow tasks
-3. Includes a human comparison arm or explicit human benchmark
+A study is included if it directly addresses either of the following research questions with measurable outcomes:
+
+1. **Primary RQ** — AI vs. physician/clinician head-to-head comparison (AI alone vs. physician alone)
+2. **Secondary RQ** — Physician+AI vs. AI alone comparison (does AI assistance improve on AI alone?)
+3. Three-arm studies covering AI, physician, and physician+AI conditions qualify under both RQs
 
 ### Exclusion criteria
 
-- Systematic reviews, meta-analyses, editorials, commentaries
+- Systematic reviews, meta-analyses, review articles, editorials, commentaries, letters to the editor
+- Study protocols or pre-registrations without reported results
 - Case reports or case series without a comparison group
-- No human comparison arm
-- Student or exam-only studies with no clinician comparison
-- Study protocols without reported results
+- No human comparison arm or human benchmark
+- Compares AI only to medical students, board exams, or multiple-choice benchmarks with no clinician arm
 - Retracted articles
 
 ---
 
 ## Screening methodology
 
-### Current approach: rule-based
+### Current approach: Claude Sonnet 4.6 (v3)
 
-The v2 screener (`src/screen_offline_v2.py`) is rule-based and does not call a model API. For each title and abstract it checks for four signals:
+The v3 screener (`src/screen_claude.py`) uses **Claude Sonnet 4.6 via the Anthropic Batches API** (50% cost reduction vs. standard API). Each title and abstract is evaluated against the inclusion/exclusion criteria above and classified as `include`, `uncertain`, or `exclude`.
 
-- **AI signal** — presence of AI/ML terms (e.g. "machine learning", "LLM", "ChatGPT")
-- **Clinical task signal** — presence of healthcare task terms
-- **Physician/clinician signal** — presence of comparator terms (e.g. "physician", "radiologist", "nurse")
-- **Comparison signal** — explicit comparison language ("versus", "outperformed", "reader study") or assisted-workflow language ("with AI / without AI", "physician-only")
+Additional fields extracted per paper:
+- `physician_type` — `medical_student` | `resident` | `attending` | `specialist_attending` | `mixed` | `not_specified`
+- `ai_models` — semicolon-separated list of named AI systems mentioned
+- `arm_ai_alone`, `arm_physician_alone`, `arm_physician_plus_ai` — boolean flags for study design
 
-Decision logic:
-```
-exclusion pattern matched           → exclude
-AI + task + physician + comparison  → include
-AI + task + partial human signal    → uncertain
-otherwise                           → exclude
-```
+The screener uses 5 few-shot examples drawn from manually reviewed papers to calibrate borderline cases.
 
-Outputs three files: `included.csv`, `uncertain.csv`, `screened.csv` (all records with decisions).
+Outputs three files per lane: `included.csv`, `uncertain.csv`, `screened.csv` (all records with decisions).
 
-### Known limitation — planned improvement
+### Corpus status (v3, as of March 2026)
 
-**The rule-based screener trades recall for cost.** Because it matches on literal text, it will miss papers that describe a physician comparison using phrasing not in the term lists (e.g. "clinician-level performance was achieved", "non-inferior to attending physicians"). These tend to fall into `uncertain` rather than `include`.
+| Lane | Screened | Included | Uncertain | Excluded |
+|---|---|---|---|---|
+| `diagnosis_reasoning_v3_core` | 4,698 | 1,222 | 177 | 3,299 |
+| `admin_core` | 1,412 | 105 | 24 | 1,283 |
+| `patient_facing_core` | 405 | 65 | 4 | 336 |
+| `supplemental_benchmark_implementation` | 9,403 | 1,559 | 295 | 7,549 |
+| **Total** | **15,918** | **2,951** | **500** | **12,467** |
 
-**Planned: re-screen the full deduplicated corpus with Claude Sonnet or better.**
+### Human validation (in progress)
 
-Model-based screening handles semantic variation, infers comparison structure from context, and produces defensible, auditable decisions — which matters for a publishable systematic review. Estimated cost for the full ~8,000–12,000 record corpus is approximately **$40 with Sonnet** or **$10 with Haiku**. The screening prompt and inclusion/exclusion criteria in `config/queries_v2_offline.py` are already structured for direct model use.
+Two parallel validation processes are underway:
+1. **Screener validation** — 100 papers (30 includes + 70 excludes, stratified by lane) reviewed independently by three human raters to assess screener accuracy and report inter-rater agreement (kappa).
+2. **Uncertain adjudication** — the 500 uncertain papers will be split across three reviewers after calibration on a shared set.
 
-Until the model re-screen is run, the `uncertain.csv` output should be treated as requiring human spot-check before final inclusion decisions are made.
+### Legacy: rule-based screener (v2)
+
+The original v2 screener (`src/screen_offline_v2.py`) is preserved for reference. It was rule-based and did not call a model API — it matched on keyword signals and was more conservative, leading to higher uncertain rates and lower recall.
 
 ---
 
@@ -157,7 +163,7 @@ All outputs write to `data_v2_offline/`.
 
 ## Caveats
 
-- The rule-based screener is more conservative than a model-based screener and will need human spot-checking of `uncertain.csv` before final inclusion decisions
+- The v3 Sonnet screener produces 500 uncertain papers (3.1% of corpus) requiring human adjudication before final inclusion decisions
 - The heuristic extractor is a candidate-harvesting step, not a final adjudicated arm table — full-text review is still required for final paired accuracy values
 - **Scopus has not been run yet** — the current corpus is PubMed + medRxiv only. A test against the Scopus API returned the following result counts for the four lanes: `diagnosis_reasoning_v3_core` 11,811 · `supplemental_benchmark_implementation` 28,824 · `admin_core` 960 · `patient_facing_core` 391 (total ~42,000). This is likely too large to screen without further query refinement or a pre-filter — the supplemental and diagnosis lanes in particular appear to be returning a broad corpus that would include many irrelevant papers. Before running Scopus, the lane queries should be reviewed and tightened, or a per-lane result cap should be applied to pull a manageable sample first. Set `SCOPUS_API_KEY` in `.env` when ready to run
 - **Abstract truncation by source** — abstract completeness varies by source and may affect screening quality. PubMed abstracts are pulled via `efetch` XML and are fully captured, including all labeled sections of structured abstracts (Background, Methods, **Results**, Conclusions) — the Results section, where AI vs. physician comparison language and numeric values typically appear, is reliably present. medRxiv abstracts via Europe PMC (`abstractText` field) can be truncated for some preprints depending on how metadata was deposited; this is particularly harmful because truncation tends to cut off before the Results section, which is where the most screening-relevant content lives. Scopus is the most significant concern: the search API returns `dc:description`, which is typically capped at ~250 characters — well short of a full abstract, and almost certainly before any Results content. This means Scopus abstracts as currently retrieved are likely snippets only, and comparison language or numeric values will be invisible to the screener. A fix would require a separate abstract retrieval call to the Scopus abstract endpoint (`/content/abstract/doi/...`) for each record. This should be resolved before running and screening the Scopus corpus
