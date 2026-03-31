@@ -16,6 +16,12 @@ QUERY_VERSION = "v2_offline_20260331"
 DATE_START = "2022/01/01"
 DATE_END = "2026/03/31"
 
+
+# I think this covers a good range from CNN to LLM, one thing I would add
+# is time series or multimodal, this is currently more a field for consumer 
+# health, however there is research like TRICORDER (stethoscope) leveraging 
+# AI to detect heart disease.
+
 AI_TERMS = [
     "artificial intelligence",
     "machine learning",
@@ -36,6 +42,13 @@ AI_TERMS = [
     "DeepSeek",
     "PaLM",
     "Bard",
+
+    # proposed additions for expanded modality coverage
+    "speech recognition",
+    "multimodal model",
+    "time series model",
+    "biosignal",
+    "wearable",
 ]
 
 CLINICAL_TASK_TERMS = [
@@ -125,6 +138,67 @@ PHYSICIAN_TERMS = [
     "AI-assisted",
     "physician augment",
     "clinician augment",
+
+    # include residents?
+    "residents",
+
+    # Ran a screening experiment on PubMed only with two runs of (generic terms) vs.
+    # (generic terms + specialty ABMS (US/UK variants)) and additional 30% of corpus was captured.
+    # Papers found were in radiology, orthopedic, ophthalmology, urology, pathology, etc.
+    # Including the list here if useful
+
+    # Imaging / diagnostics
+    "radiographer",
+    "pathologist",
+    "ophthalmologist",
+    "dermatologist",
+    "endoscopist",
+
+    # Internal medicine / subspecialties
+    "oncologist",
+    "cardiologist",
+    "neurologist",
+    "gastroenterologist",
+    "rheumatologist",
+    "intensivist",
+    "hospitalist",
+    "internist",
+    "endocrinologist",
+    "hematologist",
+    "haematologist",
+    "nephrologist",
+    "pulmonologist",
+    "respirologist",
+    "allergist",
+    "immunologist",
+    "hepatologist",
+    "neonatologist",
+
+    # Surgery / procedural
+    "urologist",
+    "otolaryngologist",
+    "orthopedic",
+    "orthopaedic",
+    "neurosurgeon",
+    "obstetrician",
+    "gynecologist",
+    "gynaecologist",
+
+    # Primary care / anaesthesia
+    "general practitioner",
+    "anesthesiologist",
+    "anaesthesiologist",
+    "anaesthetist",
+
+    # Mental health / paediatrics / rehab / geriatrics
+    "psychiatrist",
+    "pediatrician",
+    "paediatrician",
+    "physiatrist",
+    "geriatrician",
+    "epileptologist",
+    "perinatologist",
+    "urogynecologist",
 ]
 
 COMPARISON_TERMS = [
